@@ -1,0 +1,12 @@
+.gif {
+    height: calc(100% - 200px);
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 50px;
+}

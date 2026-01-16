@@ -1,0 +1,16 @@
+.map {
+  height: calc(100vh - 158px);
+  width: 100%;
+}
+
+.mat-form-field {
+  margin-top: 15px;
+}
+
+.filter-form {
+  background-color: #e8eaf6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}

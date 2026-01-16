@@ -1,0 +1,145 @@
+<div>
+    <mat-toolbar color="primary" class="toolbar">
+        <span>Incident Reporting App</span>
+        <button mat-button (click)="logout()" class="login-button">Logout</button>
+    </mat-toolbar>
+</div>
+
+<div *ngIf="role === 'CLIENT'" class="home-container">
+    <div class="map">
+        <app-map (mapClick)="onMapClick($event)"></app-map>
+    </div>
+
+    <div class="incident-form">
+        <div class="incident-container">
+            <mat-card class="incident-card" appearance="raised" color="primary">
+                <mat-card-title class="incident-title">Incident</mat-card-title>
+                <br><br>
+                <mat-card-content>
+                    <form [formGroup]="incidentForm" (ngSubmit)="reportNewIncident()">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Tip</mat-label>
+                            <mat-select formControlName="type">
+                                <mat-option value="SAOBRACAJNA_NESRECA">Saobraćajna nesreća</mat-option>
+                                <mat-option value="RADOVI_NA_PUTU">Radovi na putu</mat-option>
+                                <mat-option value="ODRON_NA_PUTU">Odron na putu</mat-option>
+                                <mat-option value="POZAR">Požar</mat-option>
+                                <mat-option value="POPLAVA">Poplava</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="incidentForm.get('type')?.invalid">Izaberite tip</mat-error>
+                        </mat-form-field>
+                
+                        <mat-form-field appearance="outline">
+                            <mat-label>Geografska dužina</mat-label>
+                            <input matInput formControlName="longitude" type="number">
+                            <mat-error *ngIf="incidentForm.get('longitude')?.errors?.['required']">Unesite geografsku dužinu</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Geografska širina</mat-label>
+                            <input matInput formControlName="latitude" type="number">
+                            <mat-error *ngIf="incidentForm.get('latitude')?.invalid">Unesite geografsku širinu</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Opis</mat-label>
+                            <textarea matInput formControlName="description" rows="1"></textarea>
+                            <mat-error *ngIf="incidentForm.get('description')?.invalid">Unesite opis</mat-error>
+                        </mat-form-field>
+
+                        <button class="select-picture-button" mat-stroked-button type="button" (click)="fileInput.click()">Izaberi sliku</button>
+                        <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                        <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)">
+                        <br><br>
+                        <p style="color: green;" *ngIf="incidentReportedMessage">{{ incidentReportedMessage }}</p>
+
+                        <div class="buttons">
+                            <button mat-raised-button color="primary" type="submit" [disabled]="incidentForm.invalid">Prijavi incident</button>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="role === 'MODERATOR'">
+    <br>
+    <div class="filter-add-container">
+      <mat-form-field appearance="outline">
+        <mat-label>Pretraga</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Unesite tekst">
+      </mat-form-field>
+    </div>
+
+    <table class="incident-table" mat-table [dataSource]="dataSource">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef> Tip </th>
+        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Datum </th>
+        <td mat-cell *matCellDef="let element"> {{element.createdAt | date: 'dd.MM.yyyy. HH:mm:ss'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Opis </th>
+        <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="latitude">
+        <th mat-header-cell *matHeaderCellDef> Geografska širina </th>
+        <td mat-cell *matCellDef="let element"> {{element.latitude}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="longitude">
+        <th mat-header-cell *matHeaderCellDef> Geografska dužina </th>
+        <td mat-cell *matCellDef="let element"> {{ element.longitude }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef> Slika </th>
+        <td mat-cell *matCellDef="let element">
+            <ng-container *ngIf="element.imageUrl && element.imageUrl !== 'N/A'; else noImage">
+                <a [href]="element.imageUrl" target="_blank">Pogledaj</a>
+            </ng-container>
+            <ng-template #noImage>
+                Nema slike
+            </ng-template>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="approve">
+        <th mat-header-cell *matHeaderCellDef> Odobri </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button color="primary" (click)="approve(element)">
+            <mat-icon>check</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="reject">
+        <th mat-header-cell *matHeaderCellDef> Odbij </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button color="warn" (click)="reject(element)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>

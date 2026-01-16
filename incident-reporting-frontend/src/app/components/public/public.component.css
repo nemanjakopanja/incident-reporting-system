@@ -1,0 +1,7 @@
+.buttons {
+    margin-left: auto;
+}
+
+.public-container {
+    height: calc(100vh - 64px);
+}

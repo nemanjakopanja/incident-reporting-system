@@ -1,0 +1,62 @@
+.login-button {
+    margin-left: auto;
+}
+
+.home-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    
+    height: calc(100vh - 64px);
+    overflow: auto;
+}
+
+.map {
+    min-width: 70%;
+    height: 100%;
+}
+
+.incident-form {
+    min-width: 30%;
+    height: 100%;
+}
+
+.incident-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: white;
+}
+  
+.incident-card {
+    background-color: #e8eaf6;
+    width: 400px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.incident-title {
+  text-align: center;
+  color: #3f51b5;
+}
+  
+mat-form-field {
+    width: 100%;
+}
+
+.select-picture-button {
+    width: 100%;
+}
+  
+.buttons {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.table-container {
+    overflow-y: auto;
+}

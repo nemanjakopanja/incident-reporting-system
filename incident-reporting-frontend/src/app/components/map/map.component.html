@@ -1,0 +1,31 @@
+<div class="map-container">
+    <div>
+        <form class="filter-form" [formGroup]="filterForm" (ngSubmit)="filterIncidents()">
+            <mat-form-field class="mat-form-field" appearance="outline">
+                <mat-label>Tip</mat-label>
+                <mat-select formControlName="type">
+                    <mat-option value="SAOBRACAJNA_NESRECA">Saobraćajna nesreća</mat-option>
+                    <mat-option value="RADOVI_NA_PUTU">Radovi na putu</mat-option>
+                    <mat-option value="ODRON_NA_PUTU">Odron na putu</mat-option>
+                    <mat-option value="POZAR">Požar</mat-option>
+                    <mat-option value="POPLAVA">Poplava</mat-option>
+                    <mat-option value="allIncidents">Sve</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="mat-form-field" appearance="outline">
+                <mat-label>Vrijeme</mat-label>
+                <mat-select formControlName="time">
+                    <mat-option value="1">24 sata</mat-option>
+                    <mat-option value="7">7 dana</mat-option>
+                    <mat-option value="31">31 dan</mat-option>
+                    <mat-option value="allIncidents">Sve</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button class="filter-button" mat-raised-button color="primary" type="submit" [disabled]="filterForm.invalid">Filtriraj</button>
+        </form>
+    </div>
+
+    <div #mapContainer class="map"></div>
+</div>
