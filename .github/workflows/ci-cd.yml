@@ -66,17 +66,3 @@ jobs:
         echo "Waiting for services to start..."
         sleep 60
         curl -f http://localhost:8080/actuator/health
-
-    # ===============================
-    # Deploy na Oracle Cloud (SSH)
-    # ===============================
-    - name: Deploy to Oracle Cloud VM
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.ORACLE_HOST }}
-        username: ${{ secrets.ORACLE_USER }}
-        key: ${{ secrets.ORACLE_SSH_KEY }}
-        script: |
-          cd ~/app
-          docker compose pull
-          docker compose up -d
