@@ -70,8 +70,15 @@ jobs:
         CONFIG_SERVER_GIT_USERNAME: ${{ secrets.CONFIG_SERVER_GIT_USERNAME }}
         CONFIG_SERVER_GIT_PASSWORD: ${{ secrets.CONFIG_SERVER_GIT_PASSWORD }}
       run: |
+        set +e
+        echo "Run docker-compose and test API"
         docker compose -f docker-compose.ci.yml up -d
-        docker compose -f docker-compose.ci.yml logs config-server
+        echo "=== sleeping 5s ==="
+        sleep 5
+        echo "=== CONFIG-SERVER STATUS ==="
+        docker ps -a
+        echo "=== CONFIG-SERVER LOGS ==="
+        docker compose -f docker-compose.ci.yml logs --no-color config-server
         echo "Waiting for services to start..."
         until curl -f http://localhost:8080/actuator/health; do
           echo "Waiting for API..."
