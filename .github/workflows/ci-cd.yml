@@ -79,6 +79,10 @@ jobs:
         docker ps -a
         echo "=== CONFIG-SERVER LOGS ==="
         docker compose -f docker-compose.ci.yml logs --no-color config-server
+        echo "=== API-GATEWAY LOGS ==="
+        docker compose -f docker-compose.ci.yml logs api-gateway
+        echo "=== DISCOVERY-SERVER LOGS ==="
+        docker compose -f docker-compose.ci.yml logs discovery-server
         echo "Waiting for services to start..."
         until curl -f http://localhost:8080/actuator/health; do
           echo "Waiting for API..."
