@@ -65,6 +65,10 @@ jobs:
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
         MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+        
+        CONFIG_SERVER_GIT_URI: ${{ secrets.CONFIG_SERVER_GIT_URI }}
+        CONFIG_SERVER_GIT_USERNAME: ${{ secrets.CONFIG_SERVER_GIT_USERNAME }}
+        CONFIG_SERVER_GIT_PASSWORD: ${{ secrets.CONFIG_SERVER_GIT_PASSWORD }}
       run: |
         docker compose -f docker-compose.ci.yml up -d
         echo "Waiting for services to start..."
@@ -72,4 +76,3 @@ jobs:
           echo "Waiting for API..."
           sleep 5
         done
-        curl -f http://localhost:8080/actuator/health

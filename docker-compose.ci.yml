@@ -29,6 +29,10 @@ services:
   config-server:
     image: kopa99/config-server:latest
     container_name: config-server
+    environment:
+      CONFIG_SERVER_GIT_URI: ${CONFIG_SERVER_GIT_URI}
+      CONFIG_SERVER_GIT_USERNAME: ${CONFIG_SERVER_GIT_USERNAME}
+      CONFIG_SERVER_GIT_PASSWORD: ${CONFIG_SERVER_GIT_PASSWORD}
     networks:
       - pisio-network
     healthcheck:
@@ -42,6 +46,7 @@ services:
     container_name: discovery-server
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      CONFIG_SERVER_URI: http://config-server:8888
     depends_on:
       config-server:
         condition: service_healthy
