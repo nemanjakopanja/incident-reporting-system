@@ -71,6 +71,7 @@ jobs:
         CONFIG_SERVER_GIT_PASSWORD: ${{ secrets.CONFIG_SERVER_GIT_PASSWORD }}
       run: |
         docker compose -f docker-compose.ci.yml up -d
+        docker compose -f docker-compose.ci.yml logs config-server
         echo "Waiting for services to start..."
         until curl -f http://localhost:8080/actuator/health; do
           echo "Waiting for API..."
