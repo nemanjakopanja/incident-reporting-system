@@ -6,7 +6,7 @@ services:
       - "9000:9000"
       - "9090:9090"
     volumes:
-      - C:/Users/PC/Desktop/minio/tmp/data:/data
+      - minio_data:/data
     env_file:
       - ./minio/.env
     command: server /data --console-address ":9090"
@@ -203,4 +203,5 @@ networks:
     driver: bridge
 
 volumes:
+  minio_data:
   mysql_data:
