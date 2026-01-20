@@ -30,6 +30,7 @@ services:
     image: kopa99/config-server:latest
     container_name: config-server
     environment:
+      SERVICE_PORT: 8888
       SPRING_CLOUD_CONFIG_SERVER_GIT_URI: ${CONFIG_SERVER_GIT_URI}
       SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: ${CONFIG_SERVER_GIT_USERNAME}
       SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: ${CONFIG_SERVER_GIT_PASSWORD}
@@ -47,6 +48,7 @@ services:
     container_name: discovery-server
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SERVICE_PORT: 8761
       CONFIG_SERVER_URI: http://config-server:8888
     depends_on:
       config-server:
