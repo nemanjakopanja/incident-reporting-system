@@ -84,7 +84,7 @@ jobs:
         echo "=== DISCOVERY-SERVER LOGS ==="
         docker compose -f docker-compose.ci.yml logs discovery-server
         echo "Waiting for services to start..."
-        until curl -f http://localhost:8080/actuator/health; do
+        until curl -f http://localhost:8080/api/incidents; do
           echo "Waiting for API..."
           sleep 5
         done
