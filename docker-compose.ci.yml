@@ -1,0 +1,134 @@
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9090"
+    networks:
+      - pisio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      retries: 10
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - pisio-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  config-server:
+    image: kopa99/config-server:latest
+    container_name: config-server
+    networks:
+      - pisio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  discovery-server:
+    image: kopa99/discovery-server:latest
+    container_name: discovery-server
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  api-gateway:
+    image: kopa99/api-gateway:latest
+    container_name: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+    ports:
+      - "8080:8080"
+
+  auth-service:
+    image: kopa99/auth-service:latest
+    container_name: auth-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+
+  user-service:
+    image: kopa99/user-service:latest
+    container_name: user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+
+  incident-service:
+    image: kopa99/incident-service:latest
+    container_name: incident-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+
+  storage-service:
+    image: kopa99/storage-service:latest
+    container_name: storage-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      minio:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+
+  moderator-service:
+    image: kopa99/moderator-service:latest
+    container_name: moderator-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - pisio-network
+
+networks:
+  pisio-network:
+    driver: bridge

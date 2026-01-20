@@ -61,8 +61,15 @@ jobs:
     # docker-compose + API test
     # ===============================
     - name: Run docker-compose and test API
+      env:
+        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+        MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       run: |
-        docker compose up -d
+        docker compose -f docker-compose.ci.yml up -d
         echo "Waiting for services to start..."
-        sleep 60
+        until curl -f http://localhost:8080/actuator/health; do
+          echo "Waiting for API..."
+          sleep 5
+        done
         curl -f http://localhost:8080/actuator/health
