@@ -66,9 +66,16 @@ jobs:
         MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
         MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
         
+        CONFIG_SERVER_URI: ${{ secrets.CONFIG_SERVER_URI }}
+        
         CONFIG_SERVER_GIT_URI: ${{ secrets.CONFIG_SERVER_GIT_URI }}
         CONFIG_SERVER_GIT_USERNAME: ${{ secrets.CONFIG_SERVER_GIT_USERNAME }}
         CONFIG_SERVER_GIT_PASSWORD: ${{ secrets.CONFIG_SERVER_GIT_PASSWORD }}
+        
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        
+        SPRING_INCIDENT_DATASOURCE_URL: ${{ secrets.SPRING_INCIDENT_DATASOURCE_URL }}
         
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
       run: |
