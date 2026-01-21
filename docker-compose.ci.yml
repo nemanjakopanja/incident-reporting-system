@@ -70,6 +70,8 @@ services:
       CONFIG_SERVER_URI: ${CONFIG_SERVER_URI}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
+      config-server:
+        condition: service_healthy
       discovery-server:
         condition: service_healthy
     networks:
@@ -87,6 +89,8 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       CONFIG_SERVER_URI: ${CONFIG_SERVER_URI}
     depends_on:
+      config-server:
+        condition: service_healthy
       discovery-server:
         condition: service_healthy
     networks:
@@ -103,6 +107,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_DATASOURCE_URL: ${SPRING_USER_DATASOURCE_URL}
     depends_on:
+      config-server:
+        condition: service_healthy
       mysql:
         condition: service_healthy
       discovery-server:
@@ -121,6 +127,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_DATASOURCE_URL: ${SPRING_INCIDENT_DATASOURCE_URL}
     depends_on:
+      config-server:
+        condition: service_healthy
       mysql:
         condition: service_healthy
       discovery-server:
@@ -139,6 +147,8 @@ services:
       MINIO_ACCESS_SECRET: ${MINIO_ROOT_PASSWORD}
       MINIO_URL: ${MINIO_URL}
     depends_on:
+      config-server:
+        condition: service_healthy
       minio:
         condition: service_healthy
       discovery-server:
@@ -157,6 +167,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_DATASOURCE_URL: ${SPRING_MODERATOR_DATASOURCE_URL}
     depends_on:
+      config-server:
+        condition: service_healthy
       mysql:
         condition: service_healthy
       discovery-server:
