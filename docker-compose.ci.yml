@@ -66,6 +66,7 @@ services:
     container_name: api-gateway
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      CONFIG_SERVER_URI: http://config-server:8888
     depends_on:
       discovery-server:
         condition: service_healthy
