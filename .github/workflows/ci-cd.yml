@@ -123,10 +123,27 @@ jobs:
         done
         echo "API Gateway is UP"
         
+        echo "Testing /api/auth/register"
+        until REG_RESPONSE=$(curl -v -X POST http://localhost:8080/api/auth/register \
+          -H "Content-Type: application/json" \
+          -d '{
+            "firstName":"test",
+            "lastName":"test",
+            "username":"test",
+            "password":"test"
+          }' 2>&1); do
+          echo "Register not ready, retrying in 5s..."
+          echo "$REG_RESPONSE"
+          sleep 5
+        done
+        
+        echo "Register response:"
+        echo "$REG_RESPONSE"
+        
         echo "Testing /api/auth/login as user"
         until RESPONSE=$(curl -v -X POST http://localhost:8080/api/auth/login \
           -H "Content-Type: application/json" \
-          -d '{"username":"renato","password":"renato"}' 2>&1) && \
+          -d '{"username":"test","password":"test"}' 2>&1) && \
           TOKEN=$(echo "$RESPONSE" | jq -r '.token') && [ "$TOKEN" != "null" ]; do
           echo "Login not ready, retrying in 5s..."
           echo "$RESPONSE"
