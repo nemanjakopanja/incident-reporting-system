@@ -122,14 +122,26 @@ jobs:
           sleep 5
         done
         
+        echo "Testing /api/auth/login as user"
+        sleep 5
+        TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+        -H "Content-Type: application/json" \
+        -d '{"username": "renato", "password": "renato"}' | jq -r '.token')
+        
+        echo "JWT Token received: $TOKEN"
+        
+        echo "Testing /api/incidents"
+        sleep 5
+        curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
+        
+        echo "Testing /api/auth/login as moderator"
+        sleep 5
+        TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+        -H "Content-Type: application/json" \
+        -d '{"username": "nemanja", "password": "nemanja"}' | jq -r '.token')
+        
+        echo "JWT Token received: $TOKEN"
+        
         echo "Testing /api/users"
         sleep 5
-        curl -f http://localhost:8080/api/users
-        
-        echo "Testing /api/storage"
-        sleep 5
-        curl -f http://localhost:8080/api/storage
-        
-        echo "Testing /api/auth/login"
-        sleep 5
-        curl -f http://localhost:8080/api/auth/login
+        curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/users
