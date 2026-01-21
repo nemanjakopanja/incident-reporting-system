@@ -63,21 +63,24 @@ jobs:
     - name: Run docker-compose and test API
       env:
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        
         MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
         MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+        MINIO_URL: ${{ secrets.MINIO_URL }}
         
         CONFIG_SERVER_URI: ${{ secrets.CONFIG_SERVER_URI }}
-        
         CONFIG_SERVER_GIT_URI: ${{ secrets.CONFIG_SERVER_GIT_URI }}
         CONFIG_SERVER_GIT_USERNAME: ${{ secrets.CONFIG_SERVER_GIT_USERNAME }}
         CONFIG_SERVER_GIT_PASSWORD: ${{ secrets.CONFIG_SERVER_GIT_PASSWORD }}
         
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-        
         SPRING_INCIDENT_DATASOURCE_URL: ${{ secrets.SPRING_INCIDENT_DATASOURCE_URL }}
+        SPRING_USER_DATASOURCE_URL: ${{ secrets.SPRING_USER_DATASOURCE_URL }}
+        SPRING_MODERATOR_DATASOURCE_URL: ${{ secrets.SPRING_MODERATOR_DATASOURCE_URL }}
         
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
       run: |
         set +e
         echo "Run docker-compose and test API"
@@ -98,8 +101,32 @@ jobs:
         echo "=== API-GATEWAY LOGS ==="
         docker compose -f docker-compose.ci.yml logs api-gateway
         
+        echo "=== AUTH-SERVICE LOGS ==="
+        docker compose -f docker-compose.ci.yml logs auth-service
+        
+        echo "=== USER-SERVICE LOGS ==="
+        docker compose -f docker-compose.ci.yml logs user-service
+        
+        echo "=== MODERATOR-SERVICE LOGS ==="
+        docker compose -f docker-compose.ci.yml logs moderator-service
+        
+        echo "=== INCIDENT-SERVICE LOGS ==="
+        docker compose -f docker-compose.ci.yml logs incident-service
+        
+        echo "=== STORAGE-SERVICE LOGS ==="
+        docker compose -f docker-compose.ci.yml logs storage-service
+        
         echo "Waiting for services to start..."
         until curl -f http://localhost:8080/api/incidents; do
           echo "Waiting for API..."
           sleep 5
         done
+        
+        sleep 5
+        curl -f http://localhost:8080/api/users/login
+        
+        sleep 5
+        curl -f http://localhost:8080/api/auth/login
+        
+        sleep 5
+        curl -f http://localhost:8080/api/storage/upload
