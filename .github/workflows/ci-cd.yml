@@ -116,11 +116,12 @@ jobs:
         echo "=== INCIDENT-SERVICE LOGS ==="
         docker compose -f docker-compose.ci.yml logs incident-service
         
-        echo "Waiting for services to start..."
-        until curl -f http://localhost:8080/api/incidents; do
-          echo "Waiting for API..."
+        echo "Waiting for API Gateway health..."
+        until curl -s http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
+          echo "Gateway not ready yet..."
           sleep 5
         done
+        echo "API Gateway is UP"
         
         echo "Testing /api/auth/login as user"
         until TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
@@ -146,4 +147,4 @@ jobs:
         
         echo "Testing /api/users"
         sleep 5
-        curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/users
+        curl -f -H "Authorization: Bearer $MOD_TOKEN" http://localhost:8080/api/users
