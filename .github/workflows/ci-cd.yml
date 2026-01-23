@@ -191,7 +191,7 @@ jobs:
                 "longitude": 17.19954618465535,
                 "type": "POPLAVA",
                 "description": "poplava",
-                "imageUrl": "poplava.jpg"
+                "imageUrl": "N/A"
               }')
               
         BODY=$(echo "$RESPONSE" | head -n -1)
