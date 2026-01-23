@@ -117,13 +117,15 @@ jobs:
         # docker compose -f docker-compose.ci.yml logs incident-service
         
         echo "Waiting for API Gateway..."
+        sleep 5
         until curl -s http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
-          echo "Gateway not ready yet..."
+          echo "API Gateway is not ready yet..."
           sleep 10
         done
         echo "API Gateway is UP"
         
         echo "Testing /api/auth/register"
+        sleep 5
         while true; do
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             -X POST http://localhost:8080/api/auth/register \
@@ -135,13 +137,10 @@ jobs:
               "password":"test"
             }')
             
-          BODY=$(echo "$RESPONSE" | head -n -1)
           STATUS=$(echo "$RESPONSE" | tail -n 1)
+          echo "REGISTER HTTP STATUS: $STATUS"
           
-          echo "HTTP STATUS: $STATUS"
-          echo "BODY: $BODY"
-          
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ] || [ "$STATUS" = "409" ]; then
+          if [ "$STATUS" = "200" ]; then
             echo "Register OK"
             break
           fi
@@ -151,6 +150,7 @@ jobs:
         done
         
         echo "Testing /api/auth/login"
+        sleep 5
         while true; do
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             -X POST http://localhost:8080/api/auth/login \
@@ -160,7 +160,7 @@ jobs:
           BODY=$(echo "$RESPONSE" | head -n -1)
           STATUS=$(echo "$RESPONSE" | tail -n 1)
           
-          echo "LOGIN STATUS: $STATUS"
+          echo "LOGIN HTTP STATUS: $STATUS"
           echo "LOGIN BODY: $BODY"
           
           TOKEN=$(echo "$BODY" | jq -r '.token')
@@ -174,14 +174,10 @@ jobs:
           sleep 5
         done
         
-        # echo "Testing /api/incidents"
-        # sleep 5
-        # curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
-        
         echo "Testing /api/incidents"
         sleep 5
         until curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents; do
-          echo "Incidents not ready yet..."
+          echo "incident-service not ready yet..."
           sleep 5
         done
         echo "Incidents loaded successfully"
@@ -200,11 +196,8 @@ jobs:
                 "imageUrl": "N/A"
               }')
               
-        BODY=$(echo "$RESPONSE" | head -n -1)
         STATUS=$(echo "$RESPONSE" | tail -n 1)
-        
-        echo "REPORT STATUS: $STATUS"
-        echo "REPORT BODY: $BODY"
+        echo "REPORT HTTP STATUS: $STATUS"
         
         if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ]; then
           echo "Incident report OK"
