@@ -182,7 +182,7 @@ jobs:
         
         echo "Testing /api/incidents/report"
         sleep 5
-        RESPONSE=$(curl -s -w "\n%{http_code}"
+        RESPONSE=$(curl -s -w "\n%{http_code}" \
           -X POST http://localhost:8080/api/incidents/report \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer $TOKEN" \
