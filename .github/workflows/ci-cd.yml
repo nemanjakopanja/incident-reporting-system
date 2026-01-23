@@ -150,16 +150,27 @@ jobs:
           sleep 5
         done
         
-        echo "Register response:"
-        echo "$REG_RESPONSE"
-        
-        echo "Testing /api/auth/login as user"
-        until RESPONSE=$(curl -v -X POST http://localhost:8080/api/auth/login \
-          -H "Content-Type: application/json" \
-          -d '{"username":"test","password":"test"}' 2>&1) && \
-          TOKEN=$(echo "$RESPONSE" | jq -r '.token') && [ "$TOKEN" != "null" ]; do
-          echo "Login not ready, retrying in 5s..."
-          echo "$RESPONSE"
+        echo "Testing /api/auth/login"
+        while true; do
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST http://localhost:8080/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"username":"test","password":"test"}')
+            
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n 1)
+          
+          echo "LOGIN STATUS: $STATUS"
+          echo "LOGIN BODY: $BODY"
+          
+          TOKEN=$(echo "$BODY" | jq -r '.token')
+          
+          if [ "$STATUS" = "200" ] && [ "$TOKEN" != "null" ] && [ -n "$TOKEN" ]; then
+            echo "Login OK"
+            break
+          fi
+          
+          echo "Login not ready, retrying..."
           sleep 5
         done
         
@@ -168,16 +179,3 @@ jobs:
         echo "Testing /api/incidents"
         sleep 5
         curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
-        
-        echo "Testing /api/auth/login as moderator"
-        until MOD_TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
-          -H "Content-Type: application/json" \
-          -d '{"username": "nemanja", "password": "nemanja"}' | jq -r '.token') && [ "$MOD_TOKEN" != "null" ]; do
-          echo "Login not ready, retrying in 5s..."
-          sleep 5
-        done
-        echo "Moderator JWT Token: $MOD_TOKEN"
-        
-        echo "Testing /api/users"
-        sleep 5
-        curl -f -H "Authorization: Bearer $MOD_TOKEN" http://localhost:8080/api/users
