@@ -179,3 +179,29 @@ jobs:
         echo "Testing /api/incidents"
         sleep 5
         curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
+        
+        echo "Testing /api/incidents/report"
+        sleep 5
+        RESPONSE=$(curl -s -w "\n%{http_code}"
+          -X POST http://localhost:8080/api/incidents/report \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $TOKEN" \
+          -d '{
+                "latitude": 44.77588873924588,
+                "longitude": 17.19954618465535,
+                "type": "POPLAVA",
+                "description": "poplava",
+                "imageUrl": "poplava.jpg"
+              }')
+              
+        BODY=$(echo "$RESPONSE" | head -n -1)
+        STATUS=$(echo "$RESPONSE" | tail -n 1)
+        
+        echo "REPORT STATUS: $STATUS"
+        echo "REPORT BODY: $BODY"
+        
+        if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ]; then
+          echo "Incident report OK"
+        else
+          echo "Incident report failed"
+        fi
