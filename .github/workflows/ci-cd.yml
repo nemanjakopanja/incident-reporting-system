@@ -88,38 +88,38 @@ jobs:
         docker compose -f docker-compose.ci.yml up -d
         sleep 5
         
-        echo "=== DOCKER PS -A ==="
-        docker ps -a
+        # echo "=== DOCKER PS -A ==="
+        # docker ps -a
         
-        echo "=== CONFIG-SERVER LOGS ==="
-        docker compose -f docker-compose.ci.yml logs --no-color config-server
+        # echo "=== CONFIG-SERVER LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs --no-color config-server
         
-        echo "=== DISCOVERY-SERVER LOGS ==="
-        docker compose -f docker-compose.ci.yml logs discovery-server
+        # echo "=== DISCOVERY-SERVER LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs discovery-server
         
-        sleep 40
-        echo "=== API-GATEWAY LOGS ==="
-        docker compose -f docker-compose.ci.yml logs api-gateway
+        # sleep 40
+        # echo "=== API-GATEWAY LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs api-gateway
         
-        echo "=== AUTH-SERVICE LOGS ==="
-        docker compose -f docker-compose.ci.yml logs auth-service
+        # echo "=== AUTH-SERVICE LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs auth-service
         
-        echo "=== STORAGE-SERVICE LOGS ==="
-        docker compose -f docker-compose.ci.yml logs storage-service
+        # echo "=== STORAGE-SERVICE LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs storage-service
         
-        echo "=== USER-SERVICE LOGS ==="
-        docker compose -f docker-compose.ci.yml logs user-service
+        # echo "=== USER-SERVICE LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs user-service
         
-        echo "=== MODERATOR-SERVICE LOGS ==="
-        docker compose -f docker-compose.ci.yml logs moderator-service
+        # echo "=== MODERATOR-SERVICE LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs moderator-service
         
-        echo "=== INCIDENT-SERVICE LOGS ==="
-        docker compose -f docker-compose.ci.yml logs incident-service
+        # echo "=== INCIDENT-SERVICE LOGS ==="
+        # docker compose -f docker-compose.ci.yml logs incident-service
         
-        echo "Waiting for API Gateway health..."
+        echo "Waiting for API Gateway..."
         until curl -s http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
           echo "Gateway not ready yet..."
-          sleep 5
+          sleep 10
         done
         echo "API Gateway is UP"
         
@@ -174,11 +174,17 @@ jobs:
           sleep 5
         done
         
-        echo "User JWT Token: $TOKEN"
+        # echo "Testing /api/incidents"
+        # sleep 5
+        # curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
         
         echo "Testing /api/incidents"
         sleep 5
-        curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents
+        until curl -f -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/incidents; do
+          echo "Incidents not ready yet..."
+          sleep 5
+        done
+        echo "Incidents loaded successfully"
         
         echo "Testing /api/incidents/report"
         sleep 5
