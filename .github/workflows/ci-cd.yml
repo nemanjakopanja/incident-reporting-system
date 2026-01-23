@@ -124,16 +124,29 @@ jobs:
         echo "API Gateway is UP"
         
         echo "Testing /api/auth/register"
-        until REG_RESPONSE=$(curl -v -X POST http://localhost:8080/api/auth/register \
-          -H "Content-Type: application/json" \
-          -d '{
-            "firstName":"test",
-            "lastName":"test",
-            "username":"test",
-            "password":"test"
-          }' 2>&1); do
-          echo "Register not ready, retrying in 5s..."
-          echo "$REG_RESPONSE"
+        until true; do
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST http://localhost:8080/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{
+              "firstName":"test",
+              "lastName":"test",
+              "username":"test",
+              "password":"test"
+            }')
+            
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n 1)
+          
+          echo "HTTP STATUS: $STATUS"
+          echo "BODY: $BODY"
+          
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ] || [ "$STATUS" = "409" ]; then
+            echo "Register OK"
+            break
+          fi
+          
+          echo "Register not ready, retrying..."
           sleep 5
         done
         
