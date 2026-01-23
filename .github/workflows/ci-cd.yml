@@ -124,7 +124,7 @@ jobs:
         echo "API Gateway is UP"
         
         echo "Testing /api/auth/register"
-        until true; do
+        while true; do
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             -X POST http://localhost:8080/api/auth/register \
             -H "Content-Type: application/json" \
