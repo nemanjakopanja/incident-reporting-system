@@ -1,0 +1,23 @@
+# Maven build output sa hosta
+target
+build
+
+# Maven/Gradle cache
+.mvn
+.gradle
+
+# IDE fajlovi
+.idea
+.vscode
+*.iml
+
+# Git
+.git
+.gitignore
+
+# Environment fajlovi (tajne)
+.env
+.env.*
+
+# Logovi
+*.log
