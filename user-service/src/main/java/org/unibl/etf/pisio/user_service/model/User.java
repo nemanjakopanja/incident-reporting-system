@@ -6,7 +6,7 @@ import org.unibl.etf.pisio.user_service.enums.Role;
 
 @Entity
 @Table(name = "user")
-@Data                           //ZASTO NE RADI???
+@Data
 public class User {
 
     @Id

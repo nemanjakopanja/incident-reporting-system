@@ -50,14 +50,5 @@ public class UserController {
             httpStatus = HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(httpStatus).body(user);
-
-        /*try {
-            User user = userService.login(loginRequest);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            Map<String, String> errorResponse = new HashMap<>();    //vracam mapu jer angular ocekuje JSON, a ne String
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }*/
     }
 }

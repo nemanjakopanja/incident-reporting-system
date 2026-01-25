@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Map;
-
 @Component
 public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
@@ -29,7 +26,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
 
         // PUBLIC rute
-        if (path.startsWith("/api/auth") || path.equals("/api/incidents") || path.startsWith("/api/storage/presigned") /*|| path.startsWith("/api/storage")*/) {
+        if (path.startsWith("/api/auth") || path.equals("/api/incidents")) {
             return chain.filter(exchange);
         }
 
@@ -50,7 +47,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
             String role = claims.get("role", String.class);
 
             // ROLE-BASED AUTORIZACIJA
-            if ((path.startsWith("/api/users") || path.startsWith("/api/moderator")) && !role.equals("MODERATOR")) {
+            if (path.startsWith("/api/moderator") && !role.equals("MODERATOR")) {
                 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 return exchange.getResponse().setComplete();
             }

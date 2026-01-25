@@ -49,19 +49,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  /*getAllIncidents() {
-    this.incidentService.getAllIncidents().subscribe(
-      (data: Incident[]) => {
-        this.incidents = data;
-        this.dataSource = new MatTableDataSource(this.incidents);
-        this.incidents.forEach(i => console.log('imgUrl: ', i.imageUrl));
-      },
-      (error) => {
-        console.log('error while getting all incidents');
-      }
-    );
-  }*/
-
   getAllIncidents() {
     this.incidentService.getAllIncidents().subscribe(
       (data: Incident[]) => {
@@ -82,30 +69,6 @@ export class HomeComponent implements OnInit {
 
         this.dataSource = new MatTableDataSource(this.incidents);
 
-        // mapiramo na observables za dohvat presigned URL-a
-        /*const observables = incidentsWithImage.map(i =>
-          this.minioService.getPresignedUrl(i.imageUrl)
-        );
-
-        forkJoin(observables).subscribe(
-          (urls: string[]) => {
-            // postavimo prave URL-ove u incidente
-            urls.forEach((url, index) => {
-              incidentsWithImage[index].imageUrl = url;
-            });
-
-            // sada postavimo dataSource sa ažuriranim URL-ovima
-            this.dataSource = new MatTableDataSource(this.incidents);
-
-            // debug
-            this.incidents.forEach(i => console.log('imgUrl: ', i.imageUrl));
-          },
-          error => {
-            console.log('Error fetching presigned URLs', error);
-            // čak i u slučaju greške postavimo dataSource sa originalnim URL-ovima
-            this.dataSource = new MatTableDataSource(this.incidents);
-          }
-        );*/
       },
       (error) => {
         console.log('error while getting all incidents');
@@ -192,7 +155,14 @@ export class HomeComponent implements OnInit {
               console.log('Incident created', res);
               this.incidentReportedMessage = 'Uspješna prijava!';
             },
-            error: err => console.error('Error creating incident', err)
+            error: err => {
+              if (err.status === 401) {
+                alert('Vaša sesija je istekla. Prijavite se ponovo!');
+                this.logout();
+                //this.incidentReportedMessage = 'Vaša sesija je istekla. Prijavite se ponovo!';
+              }
+              console.error('Error creating incident', err)
+            } 
           });
         },
         error: err => {
@@ -215,41 +185,15 @@ export class HomeComponent implements OnInit {
               console.log('Incident created', res);
               this.incidentReportedMessage = 'Uspješna prijava!';
             },
-        error: err => console.error('Error creating incident', err)
+        error: err => {
+              if (err.status === 401) {
+                alert('Vaša sesija je istekla. Prijavite se ponovo!');
+                this.logout();
+                //this.incidentReportedMessage = 'Vaša sesija je istekla. Prijavite se ponovo!';
+              }
+              console.error('Error creating incident', err)
+            }
       });
     }
   }
-
-  /*reportNewIncident() {
-    console.log('new incident method');
-    let minioImageUrl: string = 'N/A';
-
-    if (this.selectedFile) {
-      this.minioService.uploadFile(this.selectedFile).subscribe(
-        (data: string) => {
-          minioImageUrl = data;
-          console.log('minio imageUrl: ', data);
-        },
-        (error) => {
-          console.log('upload picture by minio error');
-        }
-      );
-    }
-
-    setTimeout(() => {
-      
-      const incident: Incident = {
-        id: -1,
-        type: this.incidentForm.get('type')?.value,
-        longitude: this.incidentForm.get('longitude')?.value,
-        latitude: this.incidentForm.get('latitude')?.value,
-        description: this.incidentForm.get('description')?.value,
-        imageUrl: minioImageUrl,
-        status: '',
-        createdAt: new Date()
-      };
-
-      console.log('new incident: ', incident);
-    }, 1000);
-  }*/
 }

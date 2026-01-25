@@ -26,15 +26,11 @@ public class UserService {
     public boolean registerUser(RegisterRequest registerRequest) {
         Optional<User> user = userRepository.findByUsername(registerRequest.getUsername());
         if(user.isPresent()) {
-            //throw new UsernameAlreadyTakenException();
             return false;
         }
 
         User newUser = new User(registerRequest.getFirstName(), registerRequest.getLastName(), registerRequest.getUsername(),
                 hashedPassword(registerRequest.getPassword()), Role.CLIENT);
-
-        //User registeredUser = userRepository.save(newUser);
-        //return registeredUser;
 
         userRepository.save(newUser);
         return true;
@@ -56,12 +52,6 @@ public class UserService {
 
         System.out.println("UserService return user: " + user);
         return user;
-
-        /*User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new UserNotFoundException("Wrong username!"));
-        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new UserNotFoundException("Wrong password!");
-        }
-        return user;*/
     }
 
     private String hashedPassword(String password) {
